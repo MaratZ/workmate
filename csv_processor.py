@@ -11,38 +11,38 @@ def read_csv(file_path: str) -> List[Dict[str, Union[str, float]]]:
         return [row for row in reader]
 
 
-def apply_filter(
-    data: List[Dict[str, Union[str, float]]],
-    filter_condition: str,
-) -> List[Dict[str, Union[str, float]]]:
-    """Фильтрация данных по условию (>, <, ==)."""
+def apply_filter(data, filter_condition):
     if not filter_condition:
         return data
 
-    column, op_value = filter_condition.split("=")
-    op, value = op_value.split(maxsplit=1)
+    # Разделяем по первому '=', затем удаляем пробелы вокруг оператора
+    column, condition = filter_condition.split("=", maxsplit=1)
+    op_value = condition.strip().split(maxsplit=1)
+
+    if len(op_value) == 1:
+        op = "=="  # Если оператор не указан, считаем "=="
+        value = op_value[0]
+    else:
+        op, value = op_value
 
     filtered_data = []
     for row in data:
         row_value = row[column]
         try:
-            # Пытаемся преобразовать в число для сравнения
             row_num = float(row_value)
             value_num = float(value)
             condition_met = (
-                (op == ">" and row_num > value_num)
-                or (op == "<" and row_num < value_num)
-                or (op == "==" and row_num == value_num)
+                    (op == ">" and row_num > value_num)
+                    or (op == "<" and row_num < value_num)
+                    or (op == "==" and row_num == value_num)
             )
         except ValueError:
-            # Если не число, сравниваем как строку (только ==)
-            condition_met = op == "==" and row_value == value
+            condition_met = op == "==" and row_value.strip() == value.strip()
 
         if condition_met:
             filtered_data.append(row)
 
     return filtered_data
-
 
 def apply_aggregation(
     data: List[Dict[str, Union[str, float]]],

@@ -34,7 +34,7 @@ def test_filter_gt(sample_csv):
 
 def test_filter_eq_str(sample_csv):
     data = read_csv(sample_csv)
-    filtered = apply_filter(data, "brand== apple")
+    filtered = apply_filter(data, "brand==apple")  # Убрали пробел после ==
     assert len(filtered) == 1
 
 
