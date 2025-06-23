@@ -11,36 +11,56 @@ def read_csv(file_path: str) -> List[Dict[str, Union[str, float]]]:
         return [row for row in reader]
 
 
-def apply_filter(data, filter_condition):
+def apply_filter(
+    data: List[Dict[str, Union[str, float]]],
+    filter_condition: str,
+) -> List[Dict[str, Union[str, float]]]:
+    """Фильтрация данных по условию (>, <, =)."""
     if not filter_condition:
         return data
 
-    # Разделяем по первому '=', затем удаляем пробелы вокруг оператора
-    column, condition = filter_condition.split("=", maxsplit=1)
-    op_value = condition.strip().split(maxsplit=1)
-
-    if len(op_value) == 1:
-        op = "=="  # Если оператор не указан, считаем "=="
-        value = op_value[0]
+    # Унифицируем обработку условий
+    if "==" in filter_condition:
+        column, value = [x.strip() for x in filter_condition.split("==", 1)]
+        op = "=="
+    elif ">=" in filter_condition:
+        column, value = [x.strip() for x in filter_condition.split(">=", 1)]
+        op = ">="
+    elif "<=" in filter_condition:
+        column, value = [x.strip() for x in filter_condition.split("<=", 1)]
+        op = "<="
+    elif ">" in filter_condition and not filter_condition.replace(">", "", 1).startswith("="):
+        column, value = [x.strip() for x in filter_condition.split(">", 1)]
+        op = ">"
+    elif "<" in filter_condition and not filter_condition.replace("<", "", 1).startswith("="):
+        column, value = [x.strip() for x in filter_condition.split("<", 1)]
+        op = "<"
+    elif "=" in filter_condition:
+        column, value = [x.strip() for x in filter_condition.split("=", 1)]
+        op = "=="
     else:
-        op, value = op_value
+        return data
 
     filtered_data = []
     for row in data:
-        row_value = row[column]
+        row_value = row.get(column, "").strip()
+        if not row_value:
+            continue
+
         try:
+            # Числовое сравнение
             row_num = float(row_value)
             value_num = float(value)
-            condition_met = (
-                    (op == ">" and row_num > value_num)
-                    or (op == "<" and row_num < value_num)
-                    or (op == "==" and row_num == value_num)
-            )
+            if (op == ">" and row_num > value_num) or \
+               (op == "<" and row_num < value_num) or \
+               (op == "==" and row_num == value_num) or \
+               (op == ">=" and row_num >= value_num) or \
+               (op == "<=" and row_num <= value_num):
+                filtered_data.append(row)
         except ValueError:
-            condition_met = op == "==" and row_value.strip() == value.strip()
-
-        if condition_met:
-            filtered_data.append(row)
+            # Строковое сравнение
+            if op == "==" and row_value.lower() == value.lower():
+                filtered_data.append(row)
 
     return filtered_data
 

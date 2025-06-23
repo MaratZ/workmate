@@ -26,16 +26,25 @@ def test_read_csv(sample_csv):
     assert data[0]["name"] == "iphone"
 
 
-def test_filter_gt(sample_csv):
-    data = read_csv(sample_csv)
-    filtered = apply_filter(data, "price=> 500")
-    assert len(filtered) == 2
-
-
 def test_filter_eq_str(sample_csv):
     data = read_csv(sample_csv)
-    filtered = apply_filter(data, "brand==apple")  # Убрали пробел после ==
-    assert len(filtered) == 1
+    print("\nTesting brand==apple")
+    result = apply_filter(data, "brand==apple")
+    print("Result:", result)
+    assert len(result) == 1
+
+    print("\nTesting brand=apple")
+    result = apply_filter(data, "brand=apple")
+    print("Result:", result)
+    assert len(result) == 1
+
+
+def test_filter_gt(sample_csv):
+    data = read_csv(sample_csv)
+    print("\nTesting price>500")
+    result = apply_filter(data, "price>500")
+    print("Result:", result)
+    assert len(result) == 2
 
 
 def test_aggregate_avg(sample_csv):
