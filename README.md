@@ -87,3 +87,7 @@ iphone 15 pro,apple,999,4.9
 galaxy s23 ultra,samsung,1199,4.8
 redmi note 12,xiaomi,199,4.6
 poco x5 pro,xiaomi,299,4.4
+
+![image](https://github.com/user-attachments/assets/b35a6978-f047-47fd-b3f7-4b4af6bd44d3)
+
+
